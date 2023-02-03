@@ -56,7 +56,7 @@ func base64EncodedAuth(key string) string {
 }
 
 func NewWSClient(apiKey string) WSClient {
-    encodedAuthObj := base64EncodedAuth(apiKey)
+	encodedAuthObj := base64EncodedAuth(apiKey)
 	wsUrl := url.URL{
 		Scheme:   "wss",
 		Host:     definedWSHost,
@@ -115,27 +115,27 @@ func (ws *WSClient) SubscribeToPairEvents(
 	config := ws.getPairEventsJSON(args.Id)
 	err := ws.c.WriteMessage(websocket.TextMessage, config)
 	if err != nil {
-        // TODO the error
+		// TODO the error
 		fmt.Printf("Could not subscribe to pair events: %v", err)
-        return nil, nil
+		return nil, nil
 	}
 
 	msgCh := make(chan []byte)
-    done := make(chan bool)
+	done := make(chan bool)
 
 	go func() {
 		for {
-            select {
-            case <-done:
-                ws.c.Close()
-                return
-            default:
-                _, msg, err := ws.c.ReadMessage()
-                if err != nil {
-                    fmt.Printf("Error reading ws msg: %v \n", err)
-                }
-                msgCh <- msg
-            }
+			select {
+			case <-done:
+				ws.c.Close()
+				return
+			default:
+				_, msg, err := ws.c.ReadMessage()
+				if err != nil {
+					fmt.Printf("Error reading ws msg: %v \n", err)
+				}
+				msgCh <- msg
+			}
 		}
 	}()
 
