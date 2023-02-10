@@ -1,4 +1,4 @@
-package defined
+package graphql
 
 const PairEventsSubscription = `
     subscription CreateEvents($id: String) {
@@ -63,4 +63,188 @@ const PairEventsSubscription = `
         networkId
       }
     }
+`
+
+const SubscribeToAggregates = `
+	subscription UpdateAggregateBatch($pairId: String) {
+	  onUpdateAggregateBatch(pairId: $pairId) {
+		eventSortKey
+		networkId
+		pairAddress
+		pairId
+		timestamp
+		aggregates {
+		r1 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r5 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r15 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r30 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r60 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r240 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r720 {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r1D {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+		r7D {
+		  t
+		  usd {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		  token {
+			t
+			o
+			h
+			l
+			c
+			volume
+		  }
+		}
+	  }
+
 `
