@@ -5,10 +5,10 @@ type OnCreateEventsPayload struct {
 }
 
 type OnCreateEventsData struct {
-	OnCreateEvents CreateEvent `json:"onCreateEvents"`
+	OnCreateEvents CreateEvents `json:"onCreateEvents"`
 }
 
-type CreateEvent struct {
+type CreateEvents struct {
 	Address   *string  `json:"address,omitempty"`
 	Id        *string  `json:"id,omitempty"`
 	NetworkId *int     `json:"networkId,omitempty"`
@@ -20,8 +20,7 @@ type Event struct {
 	BaseTokenPrice     *string    `json:"baseTokenPrice,omitempty"`
 	BlockHash          *string    `json:"blockHash,omitempty"`
 	BlockNumber        *int       `json:"blockNumber,omitempty"`
-	Data               *EventData `json:"eventData,omitempty"`
-	Cursor             *string    `json:"cursor,omitempty"`
+	Data               *EventData `json:"data,omitempty"`
 	EventType          *string    `json:"eventType,omitempty"` // TODO: enum
 	Id                 *string    `json:"id,omitempty"`
 	LiquidityToken     *string    `json:"liquidityToken,omitempty"`
@@ -98,4 +97,71 @@ type IndividualBarData struct {
 	V *[]int     `json:"v,omitempty"`
 	T *[]int     `json:"t,omitempty"`
 	S *string    `json:"s,omitempty"`
+}
+
+type OnUpdatePricePayload struct {
+	Data OnUpdatePriceData `json:"data"`
+}
+
+type OnUpdatePriceData struct {
+	OnUpdatePrice PriceUpdate `json:"onUpdatePrice"`
+}
+
+type PriceUpdate struct {
+	Address   *string  `json:"address,omitempty"`
+	NetworkId *int     `json:"networkId,omitempty"`
+	Timestamp *int     `json:"timestamp,omitempty"`
+	PriceUsd  *float64 `json:"priceUsd,omitempty"`
+}
+
+type OnCreateNFTEventsPayload struct {
+	Data OnCreateNFTEventsData `json:"data"`
+}
+
+type OnCreateNFTEventsData struct {
+	OnCreateNFTEvents CreateNFTEvents `json:"onCreateNFTEvents"`
+}
+
+type CreateNFTEvents struct {
+	Address   *string     `json:"address,omitempty"`
+	Id        *string     `json:"id,omitempty"`
+	NetworkId *int        `json:"networkId,omitempty"`
+	Events    *[]NFTEvent `json:"events,omitempty"`
+}
+
+type NFTEvent struct {
+	Id                         *string       `json:"id:omitempty"`
+	ContractAddress            *string       `json:"contractAddress:omitempty"`
+	NetworkId                  *int          `json:"networkId:omitempty"`
+	TokenId                    *string       `json:"tokenId:omitempty"`
+	AggregatorAddress          *string       `json:"aggregatorAddress :omitempty"`
+	FillSource                 *string       `json:"fillSource:omitempty"`
+	Maker                      *string       `json:"maker:omitempty"`
+	Taker                      *string       `json:"taker:omitempty"`
+	TotalTradePrice            *string       `json:"totalTradePrice:omitempty"`
+	TotalPriceUsd              *string       `json:"totalPriceUsd:omitempty"`
+	TotalPriceNetworkBaseToken *string       `json:"totalPriceNetworkBaseToken:omitempty"`
+	PaymentTokenAddress        *string       `json:"paymentTokenAddress:omitempty"`
+	EventType                  *string       `json:"eventType:omitempty"`
+	Data                       *NFTEventData `json:"data:omitempty"`
+	ExchangeAddress            *string       `json:"exchangeAddress:omitempty"`
+	PoolAddress                *string       `json:"poolAddress:omitempty"`
+	SortKey                    *string       `json:"sortKey:omitempty"`
+	BlockNumber                *int          `json:"blockNumber,omitempty"`
+	TransactionHash            *string       `json:"transactionHash,omitempty"`
+	TransactionIndex           *int          `json:"transactionIndex,omitempty"`
+	LogIndex                   *int          `json:"logIndex,omitempty"`
+	Timestamp                  *int          `json:"timestamp,omitempty"`
+	NumberOfTokens             *string       `json:"numberOfTokens,omitempty"`
+	PriceError                 *string       `json:"priceError,omitempty"`
+}
+
+type NFTEventData struct {
+	BuyHash  *string `json:"buyHash,omitempty"`
+	Metadata *string `json:"metadata,omitempty"`
+	Price    *string `json:"price,omitempty"`
+	Maker    *string `json:"maker,omitempty"`
+	Taker    *string `json:"taker,omitempty"`
+	Type     *string `json:"type,omitempty"`
+	SellHash *string `json:"sellHash,omitempty"`
 }

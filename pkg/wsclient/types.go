@@ -42,3 +42,15 @@ type AggregateSubscriptionArgs struct {
 	Id string
 	SubscriptionOptions
 }
+
+type PriceUpdateSubscriptionArgs struct {
+	Address   string
+	NetworkId int
+	SubscriptionOptions
+}
+
+type NFTEventsSubscriptionArgs struct {
+	Address   string
+	NetworkId int
+	SubscriptionOptions
+}

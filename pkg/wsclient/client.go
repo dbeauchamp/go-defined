@@ -85,15 +85,14 @@ func (ws *WSClient) buildSubscriptionData(
 func (ws *WSClient) readMessage() WSMsg {
 	_, msg, err := ws.c.ReadMessage()
 	if err != nil {
-		log.Println("Error reading ws msg: %v \n", err)
+		log.Printf("Error reading ws msg: %v \n", err)
 	}
 
 	var wsMsg WSMsg
 	err = json.Unmarshal(msg, &wsMsg)
 	if err != nil {
-		log.Println("Error unmarshalling ws msg: %v \n", err)
+		log.Printf("Error unmarshalling ws msg: %v \n", err)
 	}
 
 	return wsMsg
 }
-

@@ -248,3 +248,59 @@ const SubscribeToAggregates = `
 	  }
 
 `
+
+const PriceUpdateSubscription = `
+	subscription UpdatePrice($address: String, $networkId: Int) {
+	  onUpdatePrice(address: $address, networkId: $networkId) {
+		address
+		networkId
+		priceUsd
+		timestamp
+	  }
+	}
+`
+const NFTEventsSubscription = `
+	subscription CreateNftEvents($address: String, $networkId: Int) {
+	  onCreateNftEvents(address: $address, networkId: $networkId) {
+		address
+		id
+		networkId
+		events {
+		  blockNumber
+		  contractAddress
+		  data {
+			buyHash
+			metadata
+			price
+			maker
+			taker
+			type
+			sellHash
+		  }
+		  eventType
+		  exchangeAddress
+		  fillSource
+		  id
+		  individualPriceNetworkBaseToken
+		  individualPriceUsd
+		  individualTradePrice
+		  logIndex
+		  maker
+		  networkId
+		  numberOfTokens
+		  paymentTokenAddress
+		  poolAddress
+		  priceError
+		  sortKey
+		  taker
+		  timestamp
+		  tokenId
+		  totalPriceNetworkBaseToken
+		  totalPriceUsd
+		  totalTradePrice
+		  transactionHash
+		  transactionIndex
+		}
+	  }
+	}
+`
