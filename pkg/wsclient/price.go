@@ -15,9 +15,9 @@ func (ws *WSClient) buildPriceUpdateJSON(opts PriceUpdateSubscriptionArgs) ([]by
 	if opts.SubscriptionOptions.Query != "" {
 		query = opts.Query
 	}
-	data := map[string]interface{}{
+	data := map[string]any{
 		"query": query,
-		"variables": map[string]interface{}{
+		"variables": map[string]any{
 			"address":   opts.Address,
 			"networkId": opts.NetworkId,
 		},
@@ -38,7 +38,13 @@ func (ws *WSClient) buildPriceUpdateJSON(opts PriceUpdateSubscriptionArgs) ([]by
 
 func (ws *WSClient) SubscribeToPriceUpdates(
 	args PriceUpdateSubscriptionArgs,
-) (*chan *PriceUpdate, *chan bool, error) {
+) (*chan *PriceUpdate, *chan struct{}, error) {
+	subscriptionId := args.SubscriptionId
+	if len(args.SubscriptionId) == 0 {
+		subscriptionId = fmt.Sprintf("%v:%v", args.Address, args.NetworkId)
+		args.SubscriptionId = subscriptionId
+	}
+
 	config, err := ws.buildPriceUpdateJSON(args)
 	if err != nil {
 		return nil, nil, err
@@ -49,19 +55,19 @@ func (ws *WSClient) SubscribeToPriceUpdates(
 	}
 
 	msgCh := make(chan *PriceUpdate)
-	done := make(chan bool)
+	done := make(chan struct{})
 
 	go func() {
 		for {
+			var msg WSMsg
 			select {
 			case <-done:
-				ws.c.Close()
+				ws.unsubscribe(subscriptionId)
 				return
-			default:
-				wsMsg := ws.readMessage()
-				if wsMsg.Type == "data" {
+			case msg = <-*ws.publisher:
+				if msg.Type == "data" && msg.Id == subscriptionId {
 					var payload OnUpdatePricePayload
-					err = json.Unmarshal(wsMsg.Payload, &payload)
+					err = json.Unmarshal(msg.Payload, &payload)
 					if err != nil {
 						log.Printf("Error unmarshalling wsMsg: %v \n", err)
 					}
@@ -69,6 +75,7 @@ func (ws *WSClient) SubscribeToPriceUpdates(
 					priceUpdate := payload.Data.OnUpdatePrice
 					msgCh <- &priceUpdate
 				}
+			default:
 			}
 		}
 	}()

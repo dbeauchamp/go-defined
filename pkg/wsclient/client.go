@@ -16,17 +16,17 @@ const (
 )
 
 type WSClient struct {
-	apiKey string
-	c      *websocket.Conn
+	apiKey    string
+	c         *websocket.Conn
+	publisher *chan WSMsg
 }
 
 func base64EncodedAuth(key string) string {
-	authObj := fmt.Sprintf(
-		"{\"host\": \"%v\", \"Authorization\": \"%v\" }",
-		definedWSHost,
-		key,
-	)
-	return base64.StdEncoding.EncodeToString([]byte(authObj))
+	authObj, _ := json.Marshal(map[string]any{
+		"host": definedWSHost,
+		"Authorization": key,
+	})
+	return base64.StdEncoding.EncodeToString(authObj)
 }
 
 func New(apiKey string) WSClient {
@@ -45,14 +45,45 @@ func New(apiKey string) WSClient {
 		log.Fatalf("websocket dailer error: %v", err)
 	}
 
-	return WSClient{
-		apiKey: apiKey,
-		c:      c,
+	publisher := make(chan WSMsg)
+	client := WSClient{
+		apiKey:    apiKey,
+		c:         c,
+		publisher: &publisher,
 	}
+	defer client.listen()
+
+	return client
+}
+
+func (ws *WSClient) listen() {
+	go func() {
+		for {
+			wsMsg := ws.readMessage()
+			*ws.publisher <- wsMsg
+		}
+	}()
+}
+
+func (ws *WSClient) unsubscribe(id string) {
+	stop := map[string]any{
+		"id": id,
+		"type": "stop",
+	}
+	msg, _ := json.Marshal(stop)
+	ws.c.WriteMessage(websocket.TextMessage, msg)
+}
+
+func (ws *WSClient) Close() error {
+	err := ws.c.Close()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (ws *WSClient) buildSubscriptionData(
-	data map[string]interface{},
+	data map[string]any,
 	id string,
 ) ([]byte, error) {
 	bytes, err := json.Marshal(data)

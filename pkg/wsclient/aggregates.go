@@ -10,23 +10,18 @@ import (
 )
 
 func (ws *WSClient) buildAggregatesJSON(opts AggregateSubscriptionArgs) ([]byte, error) {
-	query := SubscribeToAggregates
-	if opts.SubscriptionOptions.Query != "" {
-		query = opts.Query
+	query := opts.Query
+	if len(opts.Query) == 0 {
+		query = SubscribeToAggregates
 	}
-	data := map[string]interface{}{
+	data := map[string]any{
 		"query": query,
-		"variables": map[string]interface{}{
+		"variables": map[string]any{
 			"id": opts.Id,
 		},
 	}
 
-	subscriptionId := opts.Id
-	if opts.SubscriptionOptions.SubscriptionId != "" {
-		subscriptionId = opts.SubscriptionOptions.SubscriptionId
-	}
-
-	subJSON, err := ws.buildSubscriptionData(data, subscriptionId)
+	subJSON, err := ws.buildSubscriptionData(data, opts.SubscriptionId)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +31,13 @@ func (ws *WSClient) buildAggregatesJSON(opts AggregateSubscriptionArgs) ([]byte,
 
 func (ws *WSClient) SubscribeToAggregates(
 	args AggregateSubscriptionArgs,
-) (*chan *AggregateBatchUpdate, *chan bool, error) {
+) (*chan *AggregateBatchUpdate, *chan struct{}, error) {
+	subscriptionId := args.SubscriptionId
+	if len(subscriptionId) == 0 {
+		subscriptionId = args.Id
+		args.SubscriptionId = subscriptionId
+	}
+
 	config, err := ws.buildAggregatesJSON(args)
 	if err != nil {
 		return nil, nil, err
@@ -47,19 +48,19 @@ func (ws *WSClient) SubscribeToAggregates(
 	}
 
 	msgCh := make(chan *AggregateBatchUpdate)
-	done := make(chan bool)
+	done := make(chan struct{})
 
 	go func() {
 		for {
+			var msg WSMsg
 			select {
 			case <-done:
-				ws.c.Close()
+				ws.unsubscribe(subscriptionId)
 				return
-			default:
-				wsMsg := ws.readMessage()
-				if wsMsg.Type == "data" {
+			case msg = <-*ws.publisher:
+			if msg.Type == "data" && msg.Id == subscriptionId {
 					var payload OnUpdateAggregateBatchPayload
-					err = json.Unmarshal(wsMsg.Payload, &payload)
+					err = json.Unmarshal(msg.Payload, &payload)
 					if err != nil {
 						log.Printf("Error unmarshalling wsMsg: %v \n", err)
 					}
@@ -67,6 +68,7 @@ func (ws *WSClient) SubscribeToAggregates(
 					aggBatch := payload.Data.OnUpdateAggregateBatch
 					msgCh <- &aggBatch
 				}
+			default:
 			}
 		}
 	}()
