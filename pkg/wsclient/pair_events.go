@@ -2,11 +2,11 @@ package wsclient
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/gorilla/websocket"
 
 	. "github.com/dbeauchamp/go-defined/pkg/graphql"
+	"github.com/dbeauchamp/go-defined/pkg/logger"
 )
 
 func (ws *WSClient) buildPairEventsJSON(opts PairEventsSubscriptionArgs) ([]byte, error) {
@@ -63,7 +63,7 @@ func (ws *WSClient) SubscribeToPairEvents(
 					var payload OnCreateEventsPayload
 					err = json.Unmarshal(msg.Payload, &payload)
 					if err != nil {
-						log.Printf("Error unmarshalling wsMsg: %v \n", err)
+						logger.Error("Error unmarshalling wsMsg", err)
 					}
 					events := payload.Data.OnCreateEvents.Events
 

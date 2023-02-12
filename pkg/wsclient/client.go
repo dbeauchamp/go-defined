@@ -4,10 +4,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 
 	"github.com/gorilla/websocket"
+
+	"github.com/dbeauchamp/go-defined/pkg/logger"
 )
 
 const (
@@ -42,7 +43,7 @@ func New(apiKey string) WSClient {
 	dialer.Subprotocols = []string{"graphql-ws"}
 	c, _, err := dialer.Dial(wsUrl.String(), nil)
 	if err != nil {
-		log.Fatalf("websocket dailer error: %v", err)
+		logger.Fatal("websocket dailer error", err)
 	}
 
 	publisher := make(chan WSMsg)
@@ -116,13 +117,13 @@ func (ws *WSClient) buildSubscriptionData(
 func (ws *WSClient) readMessage() WSMsg {
 	_, msg, err := ws.c.ReadMessage()
 	if err != nil {
-		log.Printf("Error reading ws msg: %v \n", err)
+		logger.Error("Error reading ws msg", err)
 	}
 
 	var wsMsg WSMsg
 	err = json.Unmarshal(msg, &wsMsg)
 	if err != nil {
-		log.Printf("Error unmarshalling ws msg: %v \n", err)
+		logger.Error("Error unmarshalling ws msg", err)
 	}
 
 	return wsMsg

@@ -3,11 +3,11 @@ package wsclient
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/gorilla/websocket"
 
 	. "github.com/dbeauchamp/go-defined/pkg/graphql"
+	"github.com/dbeauchamp/go-defined/pkg/logger"
 )
 
 func (ws *WSClient) buildPriceUpdateJSON(opts PriceUpdateSubscriptionArgs) ([]byte, error) {
@@ -69,7 +69,7 @@ func (ws *WSClient) SubscribeToPriceUpdates(
 					var payload OnUpdatePricePayload
 					err = json.Unmarshal(msg.Payload, &payload)
 					if err != nil {
-						log.Printf("Error unmarshalling wsMsg: %v \n", err)
+						logger.Error("Error unmarshalling wsMsg", err)
 					}
 
 					priceUpdate := payload.Data.OnUpdatePrice

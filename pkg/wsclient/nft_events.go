@@ -3,11 +3,11 @@ package wsclient
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/gorilla/websocket"
 
 	. "github.com/dbeauchamp/go-defined/pkg/graphql"
+	"github.com/dbeauchamp/go-defined/pkg/logger"
 )
 
 func (ws *WSClient) buildNFTEventsJSON(opts NFTEventsSubscriptionArgs) ([]byte, error) {
@@ -65,7 +65,7 @@ func (ws *WSClient) SubscribeToNFTEvents(
 					var payload OnCreateNFTEventsPayload
 					err = json.Unmarshal(msg.Payload, &payload)
 					if err != nil {
-						log.Printf("Error unmarshalling wsMsg: %v \n", err)
+						logger.Error("Error unmarshalling wsMsg", err)
 					}
 					events := payload.Data.OnCreateNFTEvents.Events
 

@@ -2,11 +2,11 @@ package wsclient
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/gorilla/websocket"
 
 	. "github.com/dbeauchamp/go-defined/pkg/graphql"
+	"github.com/dbeauchamp/go-defined/pkg/logger"
 )
 
 func (ws *WSClient) buildAggregatesJSON(opts AggregateSubscriptionArgs) ([]byte, error) {
@@ -62,7 +62,7 @@ func (ws *WSClient) SubscribeToAggregates(
 					var payload OnUpdateAggregateBatchPayload
 					err = json.Unmarshal(msg.Payload, &payload)
 					if err != nil {
-						log.Printf("Error unmarshalling wsMsg: %v \n", err)
+						logger.Error("Error unmarshalling wsMsg", err)
 					}
 
 					aggBatch := payload.Data.OnUpdateAggregateBatch
