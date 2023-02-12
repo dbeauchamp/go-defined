@@ -1,6 +1,6 @@
 # Go Defined.fi API Client
 
-A client library for accessing [Defined.fi's](www.defined.fi) realtime graphql api
+A client library for accessing [Defined.fi's](http://www.defined.fi) realtime graphql api
 
 ## Installation
 
@@ -9,7 +9,7 @@ go get -u github.com/dbeauchamp/go-defined
 ```
 
 ## Usage
-You'll need a Defined API Key. See instructions here: [defined docs](www.defined.fi)
+You'll need a Defined API Key. See instructions here: [defined docs](https://docs.defined.fi/)
 
 ```go
 package main
